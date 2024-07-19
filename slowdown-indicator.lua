@@ -111,7 +111,7 @@ events.render:set(function(ctx)
 	--update alpha value
 	udpate_alpha()
 	--render slowdown indicator
-	if (ui.get_alpha() <= 0.0) then
+	if (ui.get_alpha() <= 0.0 and player ~= nil) then
     	render_slowdown(1 - player.m_flVelocityModifier, false)
 	else
 		render_slowdown(1, true)
