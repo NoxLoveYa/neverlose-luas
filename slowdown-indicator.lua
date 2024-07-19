@@ -1,5 +1,6 @@
 --require modules
 local mouse_lib = require("Mouse")
+
 --initialize vars
 local properties = {
 	ss = render.screen_size(),
@@ -13,7 +14,7 @@ local properties = {
 	mouse_offset = vector(0, 0),
 	alpha = 0,
 	target_alpha = 0,
-	alpha_speed = 255 * 4
+	alpha_speed = 1
 }
 properties.position = properties.ss/2
 
@@ -26,6 +27,8 @@ local images = {
 local group = ui.create("Slowdown indicator")
 local color_picker = group:color_picker("Color", color(155, 155, 255, 255))
 local animation_time = group:slider("Animation time", 1, 10)
+local position = group:slider("Position", -500, 3000)
+position:visibility(false)
 
 --register menu events
 color_picker:set_callback(function(value)
@@ -34,6 +37,10 @@ end, true)
 
 animation_time:set_callback(function(value)
 	properties.alpha_speed = value:get() * 255 / 2
+end, true)
+
+position:set_callback(function(value)
+	properties.position.y = value:get()
 end, true)
 
 --functions
@@ -70,6 +77,7 @@ events.mouse_input:set(function(mouse)
 	end
 	if properties.grabbed then
 		properties.position.y = mouse.pos.y - properties.mouse_offset.y
+		position:set(properties.position.y)
 	end
 end)
 
