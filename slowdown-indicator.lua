@@ -1,6 +1,5 @@
 --require modules
 local mouse_lib = require("Mouse")
-
 --initialize vars
 local properties = {
 	ss = render.screen_size(),
@@ -44,6 +43,15 @@ position:set_callback(function(value)
 end, true)
 
 --functions
+local function udpate_alpha()
+	local direction = properties.target_alpha - properties.alpha
+	if direction > 0 then
+		properties.alpha = math.min(properties.alpha + properties.alpha_speed * globals.frametime, properties.target_alpha)
+	elseif direction < 0 then
+		properties.alpha = math.max(properties.alpha - properties.alpha_speed * globals.frametime, properties.target_alpha)
+	end
+end
+
 local function render_slowdown(slowdown, render_bounds)
 	if properties.alpha == 0 then return end
 	--var
@@ -101,17 +109,7 @@ events.render:set(function(ctx)
 		properties.target_alpha = 255
 	end
 	--update alpha value
-	if properties.alpha < properties.target_alpha then
-		properties.alpha = properties.alpha + properties.alpha_speed * globals.frametime
-		if properties.alpha > properties.target_alpha then
-			properties.alpha = properties.target_alpha
-		end
-	elseif properties.alpha > properties.target_alpha then
-		properties.alpha = properties.alpha - properties.alpha_speed * globals.frametime
-		if properties.alpha < properties.target_alpha then
-			properties.alpha = properties.target_alpha
-		end
-	end
+	udpate_alpha()
 	--render slowdown indicator
 	if (ui.get_alpha() <= 0.0) then
     	render_slowdown(1 - player.m_flVelocityModifier, false)
