@@ -19,6 +19,11 @@ properties.backup.pitch = properties.ui_refs.pitch:get()
 local group = ui.create("Legit Anti-Aim")
 local enable_on_freestanding = group:switch("Enable on freestanding", false)
 
+--register menu events
+enable_on_freestanding:set_callback(function(value)
+	properties.enable_on_freestanding = value:get()
+end, true)
+
 --functions
 local function is_defusing()
 	local player = entity.get_local_player()
