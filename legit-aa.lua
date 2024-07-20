@@ -20,12 +20,28 @@ local group = ui.create("Legit Anti-Aim")
 local enable_on_freestanding = group:switch("Enable on freestanding", false)
 
 --functions
+local function is_defusing()
+	local player = entity.get_local_player()
+	if not player or not player:is_alive() then
+		return false
+	end
+	local bomb = entity.get_entities("CPlantedC4")[1]
+	if not bomb or bomb:get_origin():dist(player:get_origin()) > 40 then
+		return false
+	end
+	return true
+end
+
 local function update_state(cmd)
 	if cmd.in_use or (properties.enable_on_freestanding and properties.ui_refs.freestand:get()) then
 		if not properties.run then
 			properties.backup.yaw = properties.ui_refs.yaw:get()
 			properties.backup.pitch = properties.ui_refs.pitch:get()
-			properties.run = true
+			properties.run = not is_defusing()
+		elseif is_defusing() then
+			properties.ui_refs.yaw:set(properties.backup.yaw)
+			properties.ui_refs.pitch:set(properties.backup.pitch)
+			properties.run = false
 		end
 	else
 		if properties.run then
