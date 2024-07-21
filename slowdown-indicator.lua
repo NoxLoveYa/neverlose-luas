@@ -1,5 +1,7 @@
 --require modules
 local mouse_lib = require("Mouse")
+local interpolation = require("Interpolation")
+
 --initialize vars
 local properties = {
 	ss = render.screen_size(),
@@ -43,15 +45,6 @@ position:set_callback(function(value)
 end, true)
 
 --functions
-local function udpate_alpha()
-	local direction = properties.target_alpha - properties.alpha
-	if direction > 0 then
-		properties.alpha = math.min(properties.alpha + properties.alpha_speed * globals.frametime, properties.target_alpha)
-	elseif direction < 0 then
-		properties.alpha = math.max(properties.alpha - properties.alpha_speed * globals.frametime, properties.target_alpha)
-	end
-end
-
 local function render_slowdown(slowdown, render_bounds)
 	if properties.alpha == 0 then return end
 	--var
@@ -90,9 +83,11 @@ events.mouse_input:set(function(mouse)
 end)
 
 events.render:set(function(ctx)
+	-- if menu is open and the indicator is grabbed, render snap line
 	if ui.get_alpha() ~= 0.0 and properties.grabbed then
 		render.line(vector(properties.ss.x/2, 0), vector(properties.ss.x/2, properties.ss.y), color(255, 255, 255, 255))
 	end
+
 	--get player and check if the handle is valid/alive
 	local player = entity.get_local_player()
 	if ui.get_alpha() <= 0.0 then
@@ -108,8 +103,10 @@ events.render:set(function(ctx)
 	else
 		properties.target_alpha = 255
 	end
+
 	--update alpha value
-	udpate_alpha()
+	properties.alpha = interpolation.interpolate(properties.alpha, properties.target_alpha, properties.alpha_speed)
+
 	--render slowdown indicator
 	if (ui.get_alpha() <= 0.0 and player ~= nil) then
     	render_slowdown(1 - player.m_flVelocityModifier, false)

@@ -1,3 +1,6 @@
+--require library
+local interpolation = require("Interpolation")
+
 --initialize vars
 local properties = {
     ss = render.screen_size(),
@@ -68,15 +71,7 @@ local function determine_alpha()
             properties.target_alpha = 0
         end
     end
-end
-
-local function update_alpha()
-	local direction = properties.target_alpha - properties.alpha
-	if direction > 0 then
-		properties.alpha = math.min(properties.alpha + properties.alpha_speed * globals.frametime, properties.target_alpha)
-	elseif direction < 0 then
-		properties.alpha = math.max(properties.alpha - properties.alpha_speed * globals.frametime, properties.target_alpha)
-	end
+    properties.alpha = interpolation.interpolate(properties.alpha, properties.target_alpha, properties.alpha_speed)
 end
 
 local function draw_scope()
@@ -109,6 +104,5 @@ end
 --register events
 events.render:set(function(ctx)
     determine_alpha()
-    update_alpha()
     draw_scope()
 end)
