@@ -82,6 +82,8 @@ local function render_miss_marker(pos, marker)
             pos.x + icon_size.x / 2 + 6,
             (pos.y - icon_size.y / 2) + ((miss_size:get() + 10) - miss_reason_size:get()) / 2
         )
+		local reason_size = render.measure_text(miss_reason_font, "", marker.reason)
+		render.shadow(reason_pos + vector(0, reason_size.y / 2), reason_pos + vector(reason_size.x, reason_size.y / 2), marker.reason_color:alpha_modulate(marker.alpha))
         render.text(miss_reason_font, reason_pos, marker.reason_color:alpha_modulate(marker.alpha), "", marker.reason)
     end
 end
